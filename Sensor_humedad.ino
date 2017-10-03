@@ -1,24 +1,14 @@
-// Sketch de ejemplo para testear el famoso sensor DHT de humedad y temperatura
-// Escrito por ladyada, de dominio público
-// Modificado por Regata para www.tallerarduino.wordpress.com
-
+/*invernadero stage 1*/
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
-#include "DHT.h"  //Añadimos la libreria con la cual trabaja nuestro sensor
-#define DHTPIN 7     // Indicamos el pin donde conectaremos la patilla data de nuestro sensor
+#include "DHT.h"  //libreria adafruit dht
+#define DHTPIN 7     //pin conectado al sensor de humedad del aire
  
-// Descomenta el tipo de sensor que vas a emplear. En este caso usamos el DHT11
+// define el tipo de sensor a utilizar
 #define DHTTYPE DHT11   // DHT 11 
 //#define DHTTYPE DHT22   // DHT 22  (AM2302)
 //#define DHTTYPE DHT21   // DHT 21 (AM2301)
- 
-// Conecta el pin 1 (el de la izquierda) del sensor a +5V
-// Conecta el pin 2 del sensor al pin que has elegido para DHTPIN
-// Conecta el pin 4 (el de la derecha) del sensor a GROUND
-// Conecta una resistencia de 10K del pin 2 (data) al pin 1 (+5V) del sensor
-//Crear el objeto lcd  dirección  0x27 y 16 columnas x 2 filas
 LiquidCrystal_I2C lcd(0x3f,16,2);  //
-
 DHT dht(DHTPIN, DHTTYPE);  //Indica el pin con el que trabajamos y el tipo de sensor
 int maxh=0, minh=100, maxt=0, mint=100;  //Variables para ir comprobando maximos y minimos
 int t,h;
@@ -29,11 +19,8 @@ const int sensorPin1 = A1;
 
 void setup() 
 {
-  //Inicio comunicacion serie para ver los datos en el ordenador
   Serial.begin(9600); 
-  //Mensaje de inicio
   Serial.println("Comprobacion sensor DHTxx:");
-  //Iniciamos el sensor
   dht.begin();
   lcd.init();
   lcd.backlight();
@@ -56,12 +43,8 @@ void loop()
   Serial.print("Porcentaje Calculado 1: ");
   Serial.println(porcentaje_calculado1);
   Serial.println(" ");
-  // La lectura de la temperatura o de la humedad lleva sobre 250 milisegundos  
-  // La lectura del sensor tambien puede estar sobre los 2 segundos (es un sensor muy lento)
   h = dht.readHumidity();  //Guarda la lectura de la humedad en la variable float h
   t = dht.readTemperature();  //Guarda la lectura de la temperatura en la variable float t
-  comprobar(); //max y minimos de sensor dth11
-   // Comprobamos si lo que devuelve el sensor es valido, si no son numeros algo esta fallando
   if (isnan(t) || isnan(h)) // funcion que comprueba si son numeros las variables indicadas 
   {
     Serial.println("Fallo al leer del sensor DHT"); //Mostramos mensaje de fallo si no son numeros
@@ -113,18 +96,5 @@ void loop()
  lcd.print(String(t)+" C");
  delay(2000);
  lcd.clear();
-}
-
-
-
-void comprobar(){
-  
-}
-
-void humedadtierra(){
-
-  
-  
-   
 }
 
