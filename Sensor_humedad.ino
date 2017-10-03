@@ -17,7 +17,7 @@
 // Conecta el pin 4 (el de la derecha) del sensor a GROUND
 // Conecta una resistencia de 10K del pin 2 (data) al pin 1 (+5V) del sensor
 //Crear el objeto lcd  dirección  0x27 y 16 columnas x 2 filas
-LiquidCrystal_I2C lcd(0x27,16,2);  //
+LiquidCrystal_I2C lcd(0x3f,16,2);  //
 
 DHT dht(DHTPIN, DHTTYPE);  //Indica el pin con el que trabajamos y el tipo de sensor
 int maxh=0, minh=100, maxt=0, mint=100;  //Variables para ir comprobando maximos y minimos
@@ -25,6 +25,7 @@ int t,h;
 
 const int sensorPin0 = A0;
 const int sensorPin1 = A1;
+
 
 void setup() 
 {
@@ -35,23 +36,31 @@ void setup()
   //Iniciamos el sensor
   dht.begin();
   lcd.init();
+  lcd.backlight();
+  lcd.print("Invernadero");
+  delay(3000);
 }
  
 void loop() 
 {
+  int humedad0 = analogRead(sensorPin0);
+  int humedad1 = analogRead(sensorPin1);
+    
+  float porcentaje_sin_calcular0=map(humedad0, 0, 1023, 0, 100);
+  float porcentaje_sin_calcular1=map(humedad1, 0, 1023, 0, 100);
+  float porcentaje_calculado0=100-porcentaje_sin_calcular0;
+  float porcentaje_calculado1=100-porcentaje_sin_calcular1;
+  
+  Serial.print("Porcentaje Calculado Sensor 0: ");
+  Serial.println(porcentaje_calculado0);
+  Serial.print("Porcentaje Calculado 1: ");
+  Serial.println(porcentaje_calculado1);
+  Serial.println(" ");
   // La lectura de la temperatura o de la humedad lleva sobre 250 milisegundos  
   // La lectura del sensor tambien puede estar sobre los 2 segundos (es un sensor muy lento)
   h = dht.readHumidity();  //Guarda la lectura de la humedad en la variable float h
   t = dht.readTemperature();  //Guarda la lectura de la temperatura en la variable float t
- comprobar(); //max y minimos de sensor dth11
- humedadtierra();
-
-  delay(1000);
-}
-
-
-
-void comprobar(){
+  comprobar(); //max y minimos de sensor dth11
    // Comprobamos si lo que devuelve el sensor es valido, si no son numeros algo esta fallando
   if (isnan(t) || isnan(h)) // funcion que comprueba si son numeros las variables indicadas 
   {
@@ -86,25 +95,35 @@ void comprobar(){
     Serial.print(mint);
     Serial.println(" *C\n");
   }
+ lcd.setCursor(0,0);
+ lcd.print("Humedad tierra");
+ lcd.setCursor(0,1);
+ lcd.print(String(porcentaje_calculado0)+" %");
+ delay(2000);
+ lcd.clear();
+ lcd.setCursor(0,0);
+ lcd.print("H. Relativa");
+ lcd.setCursor(0,1);
+ lcd.print(String(h)+" %");
+ delay(2000);
+ lcd.clear();
+ lcd.setCursor(0,0);
+ lcd.print("Temp Ambiental");
+ lcd.setCursor(0,1);
+ lcd.print(String(t)+" C");
+ delay(2000);
+ lcd.clear();
+}
+
+
+
+void comprobar(){
+  
 }
 
 void humedadtierra(){
-  int humedad0 = analogRead(sensorPin0);
-  int humedad1 = analogRead(sensorPin1);
+
   
-   float porcentaje_sin_calcular0=map(humedad0, 0, 1023, 0, 100);
-   float porcentaje_sin_calcular1=map(humedad1, 0, 1023, 0, 100);
-   float porcentaje_calculado0=100-porcentaje_sin_calcular0;
-   float porcentaje_calculado1=100-porcentaje_sin_calcular1;
-   //Serial.print("Sensor Analogo : ");
-   //Serial.println(humedad);
-   //Serial.print("Porcentaje Sin Calcular ");
-   //Serial.println(porcentaje_sin_calcular);
-   Serial.print("Porcentaje Calculado 0: ");
-   Serial.println(porcentaje_calculado0);
-   Serial.print("Porcentaje Calculado 1: ");
-   Serial.println(porcentaje_calculado1);
-   Serial.println(" ");
   
    
 }
